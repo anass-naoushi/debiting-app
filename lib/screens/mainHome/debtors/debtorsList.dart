@@ -127,7 +127,7 @@ class _DebatorsListState extends State<DebatorsList> {
                                 TextButton(
                                   child: const Text('Notify'),
                                   onPressed: (){
-                                    if(!DateTime.now().isAfter(debitsList.data![index].dueDate??DateTime.now())){
+                                    if(DateTime.now().isAfter(debitsList.data![index].dueDate??DateTime.now())){
                                       //due, send email
                                       final Uri uri = Uri(
                                           scheme: 'mailto',
