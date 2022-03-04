@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:dukka_test/models/dukkaUser.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:dukka_test/models/debit.dart';
 import 'package:dukka_test/utils/formValidators.dart';
@@ -8,7 +9,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 
 class AddDebators extends StatefulWidget {
-  const AddDebators({ Key? key }) : super(key: key);
+  final DukkaUser user;
+  const AddDebators({ Key? key, required this.user }) : super(key: key);
 
   @override
   State<AddDebators> createState() => _AddDebatorsState();
@@ -20,12 +22,12 @@ class _AddDebatorsState extends State<AddDebators> {
     Debit debit=Debit();
     Future<void> createdebit()async{
     try{
-      List debits= await Hive.box(HiveVariables.debtors).get(HiveVariables.debtors,defaultValue: []);
+      List debits= await Hive.box(HiveVariables.debtors).get(widget.user.userId,defaultValue: []);
       DateTime creationTime=DateTime.now();
       debit.creationDate=creationTime;
       debit.id=creationTime.millisecondsSinceEpoch.toString();
     debits.add(debit.toJson());
-    await Hive.box(HiveVariables.debtors).put(HiveVariables.debtors, debits);
+    await Hive.box(HiveVariables.debtors).put(widget.user.userId, debits);
     Fluttertoast.showToast(
         msg: "debit created",
         gravity: ToastGravity.BOTTOM,

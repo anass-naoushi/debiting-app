@@ -1,5 +1,6 @@
 import 'package:dukka_test/models/dukkaUser.dart';
 import 'package:dukka_test/screens/mainHome/mainHome.dart';
+import 'package:dukka_test/screens/signIn/signIn.dart';
 import 'package:dukka_test/utils/formValidators.dart';
 import 'package:dukka_test/utils/signUpUtils.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +84,7 @@ class _SignUpState extends State<SignUp> {
                        onPressed: loading?null: (){
                          Navigator.pushReplacement(
     context,
-    MaterialPageRoute(builder: (context) =>  MainHome(user:user,)),
+    MaterialPageRoute(builder: (context) =>  const SignIn()),
   );
                        },
                      )

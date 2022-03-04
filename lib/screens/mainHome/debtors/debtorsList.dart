@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:dukka_test/models/debit.dart';
+import 'package:dukka_test/models/dukkaUser.dart';
 import 'package:dukka_test/screens/mainHome/debtors/addDebitors.dart';
 import 'package:dukka_test/utils/hiveVariables.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,8 @@ import 'package:slide_countdown/slide_countdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DebatorsList extends StatefulWidget {
-  const DebatorsList({ Key? key }) : super(key: key);
+  final DukkaUser user;
+  const DebatorsList({ Key? key,required this.user }) : super(key: key);
 
   @override
   State<DebatorsList> createState() => _DebatorsListState();
@@ -19,7 +21,7 @@ class DebatorsList extends StatefulWidget {
 
 class _DebatorsListState extends State<DebatorsList> {
   Future<List<Debit>> getDebtors()async{
-     List debits=Hive.box(HiveVariables.debtors).get(HiveVariables.debtors,defaultValue: []);
+     List debits=Hive.box(HiveVariables.debtors).get(widget.user.userId,defaultValue: []);
     log(debits.toString(),name: 'Debits');
     List<Debit> debitsList=List.generate(debits.length, (index) => Debit.fromJson(Map<String,dynamic>.from(debits[index])));
     return debitsList;
@@ -35,7 +37,7 @@ class _DebatorsListState extends State<DebatorsList> {
         onPressed: ()async{
           await Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) =>  const AddDebators()),
+    MaterialPageRoute(builder: (context) =>   AddDebators(user: widget.user,)),
   );
   setState(() {
     
@@ -125,9 +127,14 @@ class _DebatorsListState extends State<DebatorsList> {
                                 TextButton(
                                   child: const Text('Notify'),
                                   onPressed: (){
-                                    if(DateTime.now().isAfter(debitsList.data![index].dueDate??DateTime.now())){
+                                    if(!DateTime.now().isAfter(debitsList.data![index].dueDate??DateTime.now())){
                                       //due, send email
-                                      _launchURL('${debitsList.data![index].debtorEmail}?subject=Due Debit&body=Hello ${debitsList.data![index].debtor}, please complete your payment, its due');
+                                      final Uri uri = Uri(
+                                          scheme: 'mailto',
+                                          path: debitsList.data![index].debtorEmail!.trim(),
+                                          query: 'subject=Payment Due&body=Hello ${debitsList.data![index].debtor}, please complete your payment for ${debitsList.data![index].title}, its due.', //add subject and body here
+                                        );
+                                      _launchURL(uri.toString());
                                     }else{
                                       Fluttertoast.showToast(
         msg: "The debit is not due yet",

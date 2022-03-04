@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:dukka_test/models/dukkaUser.dart';
 import 'package:dukka_test/screens/mainHome/expenses/addExpenses.dart';
 import 'package:intl/intl.dart';
 import 'package:dukka_test/models/expense.dart';
@@ -8,7 +9,8 @@ import 'package:hive/hive.dart';
 
 class ExpensesList extends StatefulWidget {
   static String route='expenses';
-  const ExpensesList({ Key? key }) : super(key: key);
+  final DukkaUser user;
+  const ExpensesList({ Key? key, required this.user }) : super(key: key);
 
   @override
   State<ExpensesList> createState() => _ExpensesListState();
@@ -16,11 +18,16 @@ class ExpensesList extends StatefulWidget {
 
 class _ExpensesListState extends State<ExpensesList> {
   Future<List<Expense>> getExpenses()async{
-    List expenses=Hive.box(HiveVariables.userExpenses).get(HiveVariables.userExpenses,defaultValue: []);
+    List expenses=Hive.box(HiveVariables.userExpenses).get(widget.user.userId,defaultValue: []);
     log(expenses.toString(),name: 'Expenses');
     List<Expense> expensesList=List.generate(expenses.length, (index) => Expense.fromJson(Map<String,dynamic>.from(expenses[index])));
 
     return expensesList;
+  }
+  @override
+  void initState() {
+    super.initState();
+    log(widget.user.toJson().toString());
   }
   @override
   Widget build(BuildContext context) {
@@ -30,7 +37,7 @@ class _ExpensesListState extends State<ExpensesList> {
         onPressed: ()async{
          await Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) =>  const AddExpenses()),
+    MaterialPageRoute(builder: (context) =>   AddExpenses(user:widget.user)),
   );
   setState(() {
     

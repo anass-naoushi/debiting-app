@@ -36,10 +36,10 @@ class _MainHomeState extends State<MainHome> {
             ),
             title: const Text('Dukka'),
           ),
-          body: const TabBarView(
+          body:  TabBarView(
             children: [
-              ExpensesList(),
-              DebatorsList(),
+              ExpensesList(user: widget.user,),
+              DebatorsList(user: widget.user,),
             ],
           ),
         ),

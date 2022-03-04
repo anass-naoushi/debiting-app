@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dukka_test/models/dukkaUser.dart';
 import 'package:dukka_test/models/expense.dart';
 import 'package:dukka_test/utils/formValidators.dart';
 import 'package:dukka_test/utils/hiveVariables.dart';
@@ -9,7 +10,8 @@ import 'package:hive/hive.dart';
 
 class AddExpenses extends StatefulWidget {
   static String rourte='addExpenses';
-  const AddExpenses({ Key? key }) : super(key: key);
+  final DukkaUser user;
+  const AddExpenses({ Key? key, required this.user }) : super(key: key);
 
   @override
   State<AddExpenses> createState() => _AddExpensesState();
@@ -21,12 +23,12 @@ class _AddExpensesState extends State<AddExpenses> {
   bool loading=false;
   Future<void> createExpense()async{
     try{
-      List expenses= await Hive.box(HiveVariables.userExpenses).get(HiveVariables.userExpenses,defaultValue: []);
+      List expenses= await Hive.box(HiveVariables.userExpenses).get(widget.user.userId,defaultValue: []);
       DateTime creationTime=DateTime.now();
       expense.creationDate=creationTime;
       expense.id=creationTime.millisecondsSinceEpoch.toString();
     expenses.add(expense.toJson());
-    await Hive.box(HiveVariables.userExpenses).put(HiveVariables.userExpenses, expenses);
+    await Hive.box(HiveVariables.userExpenses).put(widget.user.userId, expenses);
     Fluttertoast.showToast(
         msg: "Expense created",
         gravity: ToastGravity.BOTTOM,
