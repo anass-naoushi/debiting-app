@@ -1,4 +1,4 @@
-# dukka_test
+# debiting-app
 
 An app that allows user to create expenses and debits with the ability to sign up and sign in. The user can notify debitors of due payments using email.
 
